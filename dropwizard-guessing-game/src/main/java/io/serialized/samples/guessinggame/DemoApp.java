@@ -9,7 +9,9 @@ import io.serialized.client.SerializedClientConfig;
 import io.serialized.client.aggregate.AggregateClient;
 import io.serialized.client.projection.ProjectionClient;
 import io.serialized.client.reaction.ReactionClient;
+import io.serialized.samples.guessinggame.api.ApiExceptionMapper;
 import io.serialized.samples.guessinggame.api.CommandResource;
+import io.serialized.samples.guessinggame.api.IllegalStateExceptionMapper;
 import io.serialized.samples.guessinggame.api.QueryResource;
 import io.serialized.samples.guessinggame.domain.GameState;
 import io.serialized.samples.guessinggame.domain.event.GameFinished;
@@ -23,6 +25,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static io.serialized.client.projection.EventSelector.eventSelector;
+import static io.serialized.client.projection.Functions.append;
 import static io.serialized.client.projection.Functions.inc;
 import static io.serialized.client.projection.Functions.set;
 import static io.serialized.client.projection.Functions.unset;
@@ -52,7 +55,10 @@ public class DemoApp extends Application<DemoAppConfig> {
     SerializedClientConfig serializedClientConfig = config.serializedClientConfig();
     AggregateClient<GameState> gameAggregateClient = config.gameAggregateClient(serializedClientConfig);
     ProjectionClient projectionClient = config.projectionClient(serializedClientConfig);
-    ReactionClient reactionClient = config.reactionClient(serializedClientConfig);
+    ReactionClient reactionClient = config.reactionClient(serializedClientConfig); // Not used yet...
+
+    environment.jersey().register(new ApiExceptionMapper()); // For showing error codes from Serialized
+    environment.jersey().register(new IllegalStateExceptionMapper()); // For showing domain logic errors
 
     // Register endpoints
     environment.jersey().register(new CommandResource(gameAggregateClient));
@@ -92,6 +98,14 @@ public class DemoApp extends Application<DemoAppConfig> {
               set()
                   .with(eventSelector("result"))
                   .with(targetSelector("result"))
+                  .build())
+          .build());
+
+      projectionClient.createOrUpdate(singleProjection("game-history") // Name projection
+          .feed("game") // Event feed to project
+          .addHandler(PlayerGuessed.class.getSimpleName(),
+              append()
+                  .with(targetSelector("rounds"))
                   .build())
           .build());
 
