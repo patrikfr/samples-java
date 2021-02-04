@@ -56,36 +56,33 @@ public class CommandResourceTest {
   @Test
   public void testStart() {
 
-    StartGameCommand command = new StartGameCommand();
-    command.gameId = UUID.randomUUID();
+    StartGameCommand command = new StartGameCommand(UUID.randomUUID());
 
-    when(aggregateApiCallback.eventsStored(eq(command.gameId), any(EventBatch.class))).thenReturn(OK);
+    when(aggregateApiCallback.eventsStored(eq(command.gameId()), any(EventBatch.class))).thenReturn(OK);
 
     Response response = resources.target("/commands/start-game").request().post(json(command));
 
     // then
     assertThat(response.getStatus()).isEqualTo(201);
-    verify(aggregateApiCallback, times(1)).eventsStored(eq(command.gameId), argThat(containsEventType("GameStarted")));
+    verify(aggregateApiCallback, times(1)).eventsStored(eq(command.gameId()), argThat(containsEventType("GameStarted")));
   }
 
   @Test
   public void testGuess() {
 
-    GuessNumberCommand command = new GuessNumberCommand();
-    command.gameId = UUID.randomUUID();
-    command.number = 50;
+    GuessNumberCommand command = new GuessNumberCommand(UUID.randomUUID(), 50);
 
     AggregateApiStub.AggregateResponse aggregateResponse = new AggregateApiStub.AggregateResponse(
-        command.gameId.toString(), "game", 1, singletonList(gameStarted(command.gameId, 10, System.currentTimeMillis())
+        command.gameId().toString(), "game", 1, singletonList(gameStarted(command.gameId(), 10, System.currentTimeMillis())
     ));
 
-    when(aggregateApiCallback.aggregateLoaded(eq("game"), eq(command.gameId))).thenReturn(aggregateResponse);
-    when(aggregateApiCallback.eventsStored(eq(command.gameId), any(EventBatch.class))).thenReturn(OK);
+    when(aggregateApiCallback.aggregateLoaded(eq("game"), eq(command.gameId()))).thenReturn(aggregateResponse);
+    when(aggregateApiCallback.eventsStored(eq(command.gameId()), any(EventBatch.class))).thenReturn(OK);
 
     Response response = resources.target("/commands/guess-number").request().post(json(command));
 
     assertThat(response.getStatus()).isEqualTo(200);
-    verify(aggregateApiCallback, times(1)).eventsStored(eq(command.gameId), argThat(containsEventType("PlayerGuessed")));
+    verify(aggregateApiCallback, times(1)).eventsStored(eq(command.gameId()), argThat(containsEventType("PlayerGuessed")));
   }
 
   public static SerializedClientConfig createConfig(DropwizardClientExtension dropwizard) {

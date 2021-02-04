@@ -33,7 +33,7 @@ public class GameTest {
 
     Game game = new Game(new GameState());
     Event<GameStarted> gameStarted = (Event<GameStarted>) game.start(id);
-    assertThat(gameStarted.data().getNumber()).isBetween(1, 100);
+    assertThat(gameStarted.data().number()).isBetween(1, 100);
   }
 
   @Test
@@ -64,8 +64,8 @@ public class GameTest {
     Iterator<Event<?>> iterator = events.iterator();
     Event<PlayerGuessed> playerGuessed = (Event<PlayerGuessed>) iterator.next();
     Event<GameFinished> gameFinished = (Event<GameFinished>) iterator.next();
-    assertThat(playerGuessed.data().getGuess()).isEqualTo(gameFinished.data().getCorrectAnswer());
-    assertThat(gameFinished.data().getResult()).isEqualTo("Player won");
+    assertThat(playerGuessed.data().guess()).isEqualTo(gameFinished.data().correctAnswer());
+    assertThat(gameFinished.data().result()).isEqualTo("Player won");
   }
 
   @Test
@@ -81,8 +81,8 @@ public class GameTest {
     Iterator<Event<?>> iterator = events.iterator();
     Event<PlayerGuessed> playerGuessed = (Event<PlayerGuessed>) iterator.next();
     Event<HintAdded> hintAdded = (Event<HintAdded>) iterator.next();
-    assertThat(playerGuessed.data().getGuess()).isPositive();
-    assertThat(hintAdded.data().getHint()).isEqualTo("Lower!");
+    assertThat(playerGuessed.data().guess()).isPositive();
+    assertThat(hintAdded.data().hint()).isEqualTo("Lower!");
   }
 
   @Test
@@ -98,8 +98,8 @@ public class GameTest {
     Iterator<Event<?>> iterator = events.iterator();
     Event<PlayerGuessed> playerGuessed = (Event<PlayerGuessed>) iterator.next();
     Event<HintAdded> hintAdded = (Event<HintAdded>) iterator.next();
-    assertThat(playerGuessed.data().getGuess()).isPositive();
-    assertThat(hintAdded.data().getHint()).isEqualTo("Higher!");
+    assertThat(playerGuessed.data().guess()).isPositive();
+    assertThat(hintAdded.data().hint()).isEqualTo("Higher!");
   }
 
   @Test
@@ -124,8 +124,8 @@ public class GameTest {
     Iterator<Event<?>> iterator = events.iterator();
     Event<PlayerGuessed> playerGuessed = (Event<PlayerGuessed>) iterator.next();
     Event<GameFinished> gameFinished = (Event<GameFinished>) iterator.next();
-    assertThat(playerGuessed.data().getGuess()).isNotEqualTo(gameFinished.data().getCorrectAnswer());
-    assertThat(gameFinished.data().getResult()).isEqualTo("Player lost");
+    assertThat(playerGuessed.data().guess()).isNotEqualTo(gameFinished.data().correctAnswer());
+    assertThat(gameFinished.data().result()).isEqualTo("Player lost");
   }
 
   @Test

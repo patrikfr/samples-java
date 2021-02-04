@@ -6,22 +6,8 @@ import java.util.UUID;
 
 import static io.serialized.client.aggregate.Event.newEvent;
 
-public class PlayerGuessed {
-
-  private UUID gameId;
-  private int guess;
-  private long guessedAt;
-
-  public static Event<PlayerGuessed> playerGuessed(UUID gameId, int guess, long guessedAt) {
-    PlayerGuessed event = new PlayerGuessed();
-    event.gameId = gameId;
-    event.guess = guess;
-    event.guessedAt = guessedAt;
-    return newEvent(event).build();
+public record PlayerGuessed(UUID gameId, int guess, long guessedAt) {
+  public static Event<PlayerGuessed> playerGuessed(final UUID gameId, final int guess, final long guessedAt) {
+    return newEvent(new PlayerGuessed(gameId, guess, guessedAt)).build();
   }
-
-  public int getGuess() {
-    return guess;
-  }
-
 }

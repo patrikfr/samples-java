@@ -1,6 +1,5 @@
 package io.serialized.samples.guessinggame.domain;
 
-import com.google.common.base.Preconditions;
 import io.serialized.client.aggregate.Event;
 
 import java.security.SecureRandom;
@@ -8,36 +7,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.google.common.base.Preconditions.checkState;
 import static io.serialized.samples.guessinggame.domain.event.GameFinished.gameFinished;
 import static io.serialized.samples.guessinggame.domain.event.GameStarted.gameStarted;
 import static io.serialized.samples.guessinggame.domain.event.HintAdded.hintAdded;
 import static io.serialized.samples.guessinggame.domain.event.PlayerGuessed.playerGuessed;
 import static java.lang.System.currentTimeMillis;
 
-public class Game {
-
+public record Game(int number, int guessCount, boolean started, boolean finished) {
   private static final SecureRandom RANDOMIZER = new SecureRandom();
 
-  private final int number;
-  private final int guessCount;
-  private final boolean started;
-  private final boolean finished;
-
   public Game(GameState gameState) {
-    this.number = gameState.getNumber();
-    this.guessCount = gameState.getGuessCount();
-    this.started = gameState.isStarted();
-    this.finished = gameState.isFinished();
+    this(gameState.getNumber(), gameState.getGuessCount(),gameState.isStarted(), gameState.isFinished());
   }
 
   public Event<?> start(UUID gameId) {
-    Preconditions.checkState(!started, "Game is already started!");
+    checkState(!started, "Game is already started!");
     return gameStarted(gameId, generateRandomNumber(), currentTimeMillis());
   }
 
   public List<Event<?>> guess(UUID gameId, int guess) {
-    Preconditions.checkState(started, "Game is not started!");
-    Preconditions.checkState(!finished, "Game is already finished!");
+    checkState(started, "Game is not started!");
+    checkState(!finished, "Game is already finished!");
 
     List<Event<?>> events = new ArrayList<>();
 

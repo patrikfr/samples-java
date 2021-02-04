@@ -36,17 +36,17 @@ public class CommandResource {
   @Path("start-game")
   public Response startGame(@Valid @NotNull StartGameCommand command) {
 
-    logger.info("Starting new game, [{}]", command.gameId);
+    logger.info("Starting new game, [{}]", command.gameId());
 
     Game game = new Game(new GameState());
-    Event<?> event = game.start(command.gameId);
+    Event<?> event = game.start(command.gameId());
 
     gameAggregateClient.save(saveRequest()
-        .withAggregateId(command.gameId)
+        .withAggregateId(command.gameId())
         .withEvent(event)
         .build());
 
-    URI location = UriBuilder.fromResource(QueryResource.class).path("games/{gameId}").build(command.gameId);
+    URI location = UriBuilder.fromResource(QueryResource.class).path("games/{gameId}").build(command.gameId());
     return Response.created(location).build();
   }
 
@@ -54,11 +54,11 @@ public class CommandResource {
   @Path("guess-number")
   public Response guessNumber(@Valid @NotNull GuessNumberCommand command) {
 
-    logger.info("Guessing number [{}] in game [{}]", command.number, command.gameId);
+    logger.info("Guessing number [{}] in game [{}]", command.number(), command.gameId());
 
-    gameAggregateClient.update(command.gameId, gameState -> {
+    gameAggregateClient.update(command.gameId(), gameState -> {
       Game game = new Game(gameState);
-      return game.guess(command.gameId, command.number);
+      return game.guess(command.gameId(), command.number());
     });
 
     return Response.ok().build();

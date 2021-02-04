@@ -15,7 +15,7 @@ public class GameState {
 
   public GameState handleGameStarted(Event<GameStarted> event) {
     this.started = true;
-    this.number = event.data().getNumber();
+    this.number = event.data().number();
     return this;
   }
 
