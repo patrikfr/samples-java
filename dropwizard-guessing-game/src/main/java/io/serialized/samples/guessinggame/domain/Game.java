@@ -18,7 +18,7 @@ public record Game(int number, int guessCount, boolean started, boolean finished
   private static final SecureRandom RANDOMIZER = new SecureRandom();
 
   public Game(GameState gameState) {
-    this(gameState.getNumber(), gameState.getGuessCount(),gameState.isStarted(), gameState.isFinished());
+    this(gameState.number(), gameState.guessCount(),gameState.started(), gameState.finished());
   }
 
   public Event<?> start(UUID gameId) {

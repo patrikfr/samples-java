@@ -6,47 +6,25 @@ import io.serialized.samples.guessinggame.domain.event.GameStarted;
 import io.serialized.samples.guessinggame.domain.event.HintAdded;
 import io.serialized.samples.guessinggame.domain.event.PlayerGuessed;
 
-public class GameState {
+public record GameState(int number, int guessCount, boolean started, boolean finished) {
 
-  private int number;
-  private int guessCount;
-  private boolean started;
-  private boolean finished;
+  public GameState() {
+    this(0, 0, false, false);
+  }
 
   public GameState handleGameStarted(Event<GameStarted> event) {
-    this.started = true;
-    this.number = event.data().number();
-    return this;
+    return new GameState(event.data().number(), 0, true, finished);
   }
 
   public GameState handlePlayerGuessed(Event<PlayerGuessed> event) {
-    this.guessCount++;
-    return this;
+    return new GameState(number, guessCount + 1, started, finished);
   }
 
   public GameState handleHintAdded(Event<HintAdded> event) {
-    return this;
+    return new GameState(number, guessCount, started, finished);
   }
 
   public GameState handleGameFinished(Event<GameFinished> event) {
-    this.finished = true;
-    return this;
+    return new GameState(number, guessCount, started, true);
   }
-
-  public int getNumber() {
-    return number;
-  }
-
-  public int getGuessCount() {
-    return guessCount;
-  }
-
-  public boolean isStarted() {
-    return started;
-  }
-
-  public boolean isFinished() {
-    return finished;
-  }
-
 }
