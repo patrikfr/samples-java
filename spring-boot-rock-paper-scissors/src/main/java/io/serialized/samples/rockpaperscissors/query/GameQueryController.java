@@ -27,8 +27,8 @@ public class GameQueryController {
 
   @RequestMapping(value = "/high-score", method = GET, produces = "application/json")
   @ResponseBody
-  public HighScoreProjection highScore() {
-    return HighScoreProjection.fromProjections(projectionClient.query(list("high-score").sort("-wins").build(HighScore.class)));
+  public HighScore highScore() {
+    return HighScore.fromProjections(projectionClient.query(list("winners").build(Winner.class)));
   }
 
   @RequestMapping(value = "/stats", method = GET, produces = "application/json")
@@ -42,7 +42,7 @@ public class GameQueryController {
   @ResponseBody
   public GameProjection game(@PathVariable UUID gameId) {
     ProjectionResponse<GameProjection> game = projectionClient.query(single("games")
-        .id(gameId)
+        .withId(gameId)
         .build(GameProjection.class));
     return game.data();
   }
