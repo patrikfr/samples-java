@@ -54,7 +54,7 @@ public class QueryResourceTest {
 
     when(projectionApiCallback.singleProjectionLoaded("games", gameId)).thenReturn(projectionResponse);
 
-    Response response = resources.target("/queries/games/" + gameId.toString()).request().get();
+    Response response = resources.target("/queries/games/" + gameId).request().get();
 
     assertThat(response.getStatus()).isEqualTo(200);
     GameProjection payload = response.readEntity(GameProjection.class);
@@ -72,30 +72,30 @@ public class QueryResourceTest {
 
     GameHistoryProjectionResponse projection = new GameHistoryProjectionResponse(
         List.of(
-            new Round(50, Instant.parse("2021-02-04T12:15:30.00Z").toEpochMilli()),
-            new Round(75, Instant.parse("2021-02-04T12:17:30.00Z").toEpochMilli()),
-            new Round(63, Instant.parse("2021-02-04T12:18:30.00Z").toEpochMilli())));
+            new Round(50, Instant.parse("2021-02-04T12:15:30Z").toEpochMilli()),
+            new Round(75, Instant.parse("2021-02-04T12:17:30Z").toEpochMilli()),
+            new Round(63, Instant.parse("2021-02-04T12:18:30Z").toEpochMilli())));
 
     ProjectionResponse<GameHistoryProjectionResponse> projectionResponse = new ProjectionResponse<>(
         gameId.toString(), System.currentTimeMillis(), projection);
 
     when(projectionApiCallback.singleProjectionLoaded("game-history", gameId)).thenReturn(projectionResponse);
 
-    Response response = resources.target("/queries/games/" + gameId.toString() + "/history").request().get();
+    Response response = resources.target("/queries/games/" + gameId + "/history").request().get();
     String expectedPayload = """
         {
           "rounds":[
             {
               "guess":50,
-              "timestamp":"Thu Feb 04 13:15:30 CET 2021"
+              "timestamp":"2021-02-04T12:15:30Z"
             },
             {
               "guess":75,
-              "timestamp":"Thu Feb 04 13:17:30 CET 2021"
+              "timestamp":"2021-02-04T12:17:30Z"
             },
             {
               "guess":63,
-              "timestamp":"Thu Feb 04 13:18:30 CET 2021"
+              "timestamp":"2021-02-04T12:18:30Z"
             }
           ]
         }""";
